@@ -1,3 +1,4 @@
+import '../pages/index.css';
 // @todo: Темплейт карточки
 const card = document.querySelector('#card-template').content;
 
@@ -6,12 +7,13 @@ const content = document.querySelector('.content');
 const placeList = content.querySelector('.places__list');
 
 // @todo: Функция создания карточки
-function createCard(name, link, handler) {
+function createCard(name, link, deleteCardHandler) {
     const cardElement = card.querySelector('.card').cloneNode(true);
-    cardElement.querySelector('.card__image').src = link;
-    cardElement.querySelector('.card__image').alt = name;
+    const cardImage = cardElement.querySelector('.card__image');
+    cardImage.src = link;
+    cardImage.alt = name;
     cardElement.querySelector('.card__title').textContent = name;
-    cardElement.querySelector('.card__delete-button').addEventListener('click', handler );
+    cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCardHandler );
     return cardElement;
 }
 
