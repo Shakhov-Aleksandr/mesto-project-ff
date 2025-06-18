@@ -1,4 +1,6 @@
 import '../pages/index.css';
+import initialCards from '../scripts/cards.js';
+
 // @todo: Темплейт карточки
 const card = document.querySelector('#card-template').content;
 
@@ -13,7 +15,7 @@ function createCard(name, link, deleteCardHandler) {
     cardImage.src = link;
     cardImage.alt = name;
     cardElement.querySelector('.card__title').textContent = name;
-    cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCardHandler );
+    cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCardHandler);
     return cardElement;
 }
 
@@ -23,6 +25,36 @@ function deleteCard(evt) {
 };
 
 // @todo: Вывести карточки на страницу
-initialCards.forEach(card =>  placeList.append(createCard(card.name, card.link, evt => deleteCard(evt))));
+initialCards.forEach(card => placeList.append(createCard(card.name, card.link, evt => deleteCard(evt))));
    
+
+const popupProfile = document.querySelector('.popup_type_edit');
+const profileButton = document.querySelector('.profile__edit-button');
+
+profileButton.addEventListener('click', () => openPopup(popupProfile));
+
+function openPopup(popup) {
+    popup.classList.add('popup_is-opened');
+    
+    popup.addEventListener('click', evt => {
+        if (evt.currentTarget === evt.target) {
+            closePopup(popup);
+        }
+    }) 
+    document.addEventListener('keyup', evt => closePopupByEsc(evt, popup));
+    popup.querySelector('.popup__close').addEventListener('click', () => closePopup(popup)) 
+};
+
+function closePopupByEsc(event, popup) {
+    console.log(event.key);
+  if (event.key === 'Escape') {
+    closePopup(popup);
+  }
+};
+
+function closePopup(popup) {
+    popup.classList.remove('popup_is-opened');
+    document.removeEventListener('keydown', evt => closePopupByEsc(evt, popup));
+
+};
 
