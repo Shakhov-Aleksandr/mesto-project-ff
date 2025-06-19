@@ -31,6 +31,13 @@ initialCards.forEach(card => placeList.append(createCard(card.name, card.link, e
 const popupProfile = document.querySelector('.popup_type_edit');
 const profileButton = document.querySelector('.profile__edit-button');
 
+
+const nameInput = document.querySelector('.profile__title');
+const jobInput = document.querySelector('.profile__description');
+const formEditProfile = document.forms.edit_profile;
+
+
+
 profileButton.addEventListener('click', () => openPopup(popupProfile));
 
 function openPopup(popup) {
@@ -41,6 +48,13 @@ function openPopup(popup) {
             closePopup(popup);
         }
     }) 
+
+    const nameFieldInPopup = formEditProfile.elements.name;
+    const jobFieldInPopup = formEditProfile.elements.description;
+    nameFieldInPopup.value = nameInput.textContent;
+    jobFieldInPopup.value = jobInput.textContent;
+
+
     document.addEventListener('keyup', evt => closePopupByEsc(evt, popup));
     popup.querySelector('.popup__close').addEventListener('click', () => closePopup(popup)) 
 };
@@ -58,3 +72,15 @@ function closePopup(popup) {
 
 };
 
+
+
+function handleFormSubmit(evt, popup) {
+    evt.preventDefault();
+    const nameFieldInPopup = formEditProfile.elements.name;
+    const jobFieldInPopup = formEditProfile.elements.description;
+    nameInput.textContent = nameFieldInPopup.value;
+    jobInput.textContent = jobFieldInPopup.value;
+    closePopup(popup);
+};
+
+formEditProfile.addEventListener('submit', evt => handleFormSubmit(evt, popupProfile));
