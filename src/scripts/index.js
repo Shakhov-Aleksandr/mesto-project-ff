@@ -7,7 +7,6 @@ popupArr.map( item => {
     item.classList.add('popup_is-animated');
 });
 
-
 // @todo: Темплейт карточки
 const card = document.querySelector('#card-template').content;
 
@@ -16,15 +15,32 @@ const content = document.querySelector('.content');
 const placeList = content.querySelector('.places__list');
 
 // @todo: Функция создания карточки
-function createCard(name, link, deleteCardHandler) {
+function createCard(name, link, deleteCardHandler, addCardLikeHandler, fullViewCardHendler) {
     const cardElement = card.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     cardImage.src = link;
     cardImage.alt = name;
     cardElement.querySelector('.card__title').textContent = name;
     cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCardHandler);
+    cardElement.querySelector('.card__like-button ').addEventListener('click', addCardLikeHandler);
+    cardImage.addEventListener('click', () => fullViewCardHendler(cardImage));
     return cardElement;
 }
+
+
+const popupImage = document.querySelector('.popup_type_image');
+const linkImage = popupImage.querySelector('.popup__image');
+const descriptionImage = popupImage.querySelector('.popup__caption');
+function fullViewCard(Image) {
+    popupImage.classList.add('popup_is-opened');
+    linkImage.src = Image.src;
+    descriptionImage.textContent = Image.alt;
+    popupImage.querySelector('.popup__close').addEventListener('click', () => popupImage.classList.remove('popup_is-opened'));
+};
+
+function addCardLike(evt) {
+    evt.target.classList.toggle('card__like-button_is-active');
+};
 
 // @todo: Функция удаления карточки
 function deleteCard(evt) {
@@ -32,7 +48,17 @@ function deleteCard(evt) {
 };
 
 // @todo: Вывести карточки на страницу
-initialCards.forEach(card => placeList.append(createCard(card.name, card.link, evt => deleteCard(evt))));
+initialCards.forEach(
+    card => placeList.append(
+        createCard( 
+                    card.name, 
+                    card.link, 
+                    evt => deleteCard(evt), 
+                    evt => addCardLike(evt), 
+                    evt => fullViewCard(evt)
+        )
+    )
+);
    
 
 const popupProfile = document.querySelector('.popup_type_edit');
@@ -113,7 +139,7 @@ function handleAddUserCard(evt) {
     evt.preventDefault();
     card.name =  formAddcard.elements.place_name.value;
     card.link = formAddcard.elements.link.value;
-    placeList.prepend(createCard(card.name, card.link, evt => deleteCard(evt)));
+    placeList.prepend(createCard(card.name, card.link, evt => deleteCard(evt), evt => addCardLike(evt), evt => fullViewCard(evt)));
     formAddcard.reset(); 
     popupCreateCard.classList.remove('popup_is-opened');
 };
