@@ -1,6 +1,13 @@
 import '../pages/index.css';
 import initialCards from '../scripts/cards.js';
 
+const allPopups = document.querySelectorAll('.popup');
+const popupArr = Array.from(allPopups);
+popupArr.map( item => {
+    item.classList.add('popup_is-animated');
+});
+
+
 // @todo: Темплейт карточки
 const card = document.querySelector('#card-template').content;
 
@@ -60,7 +67,6 @@ function openPopup(popup) {
 };
 
 function closePopupByEsc(event, popup) {
-    console.log(event.key);
   if (event.key === 'Escape') {
     closePopup(popup);
   }
@@ -73,8 +79,7 @@ function closePopup(popup) {
 };
 
 
-
-function handleFormSubmit(evt, popup) {
+function handleProfileSubmit(evt, popup) {
     evt.preventDefault();
     const nameFieldInPopup = formEditProfile.elements.name;
     const jobFieldInPopup = formEditProfile.elements.description;
@@ -83,4 +88,36 @@ function handleFormSubmit(evt, popup) {
     closePopup(popup);
 };
 
-formEditProfile.addEventListener('submit', evt => handleFormSubmit(evt, popupProfile));
+formEditProfile.addEventListener('submit', evt => handleProfileSubmit(evt, popupProfile));
+
+
+
+
+
+const newCardBtn = document.querySelector('.profile__add-button');
+const popupCreateCard = document.querySelector('.popup_type_new-card');
+const popupCreateCardClose = popupCreateCard.querySelector('.popup__close');
+
+newCardBtn.addEventListener('click', () => {
+    popupCreateCard.classList.add('popup_is-opened');
+});
+
+popupCreateCardClose.addEventListener('click', () => {
+    popupCreateCard.classList.remove('popup_is-opened');
+})
+
+
+const formAddcard = document.forms.new_place;
+
+function handleAddUserCard(evt) {
+    evt.preventDefault();
+    card.name =  formAddcard.elements.place_name.value;
+    card.link = formAddcard.elements.link.value;
+    placeList.prepend(createCard(card.name, card.link, evt => deleteCard(evt)));
+    formAddcard.reset(); 
+    popupCreateCard.classList.remove('popup_is-opened');
+};
+
+formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
+
+
