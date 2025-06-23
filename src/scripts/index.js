@@ -30,60 +30,56 @@ initialCards.forEach(
         createCard(
             card.name,
             card.link,
-            evt => deleteCard(evt),
-            evt => addCardLike(evt),
-            evt => fullViewCard(evt)
+            deleteCard,
+            addCardLike,
+            fullViewCard
         )
     )
 );
 
-// Обработчик, открывающий попап при клике по изображению карточки
+// Обработчик, открывающий модальное окно при клике по изображению карточки
 const popupImage = document.querySelector('.popup_type_image');
 const linkImage = popupImage.querySelector('.popup__image');
 const descriptionImage = popupImage.querySelector('.popup__caption');
 
-function fullViewCard(Image) {
-    popupImage.classList.add('popup_is-opened');
-    linkImage.src = Image.src;
-    descriptionImage.textContent = Image.alt;
-    popupImage.querySelector('.popup__close').addEventListener('click', () => popupImage.classList.remove('popup_is-opened'));
+function fullViewCard(name, link) {
+    linkImage.src = link;
+    descriptionImage.textContent = name;
+    openPopup(popupImage);
 };
 
 //Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
 export const nameInput = document.querySelector('.profile__title');
 export const jobInput = document.querySelector('.profile__description');
 export const formEditProfile = document.forms.edit_profile;
+formEditProfile.addEventListener('submit', evt => handleProfileSubmit(evt));
 
 const popupProfile = document.querySelector('.popup_type_edit');
 const profileButton = document.querySelector('.profile__edit-button');
-profileButton.addEventListener('click', () => openPopup(popupProfile));
+profileButton.addEventListener('click', () => {
+    const nameFieldInPopup = formEditProfile.elements.name;
+    const jobFieldInPopup = formEditProfile.elements.description;
+    nameFieldInPopup.value = nameInput.textContent;
+    jobFieldInPopup.value = jobInput.textContent;
+    openPopup(popupProfile);
+});
 
-function handleProfileSubmit(evt, popup) {
+function handleProfileSubmit(evt) {
     evt.preventDefault();
     const nameFieldInPopup = formEditProfile.elements.name;
     const jobFieldInPopup = formEditProfile.elements.description;
     nameInput.textContent = nameFieldInPopup.value;
     jobInput.textContent = jobFieldInPopup.value;
-    closePopup(popup);
+    closePopup(popupProfile);
 };
-
-formEditProfile.addEventListener('submit', evt => handleProfileSubmit(evt, popupProfile));
 
 //Блок отвечает за вывод модального окна, дабавляющего кастомную карточку 
 const newCardBtn = document.querySelector('.profile__add-button');
 const popupCreateCard = document.querySelector('.popup_type_new-card');
-const popupCreateCardClose = popupCreateCard.querySelector('.popup__close');
-
-newCardBtn.addEventListener('click', () => {
-    popupCreateCard.classList.add('popup_is-opened');
-});
-
-popupCreateCardClose.addEventListener('click', () => {
-    popupCreateCard.classList.remove('popup_is-opened');
-})
+newCardBtn.addEventListener('click', () => openPopup(popupCreateCard));
 
 const formAddcard = document.forms.new_place;
-
+formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
 function handleAddUserCard(evt) {
     evt.preventDefault();
     card.name = formAddcard.elements.place_name.value;
@@ -92,13 +88,12 @@ function handleAddUserCard(evt) {
         createCard(
             card.name,
             card.link,
-            evt => deleteCard(evt),
-            evt => addCardLike(evt),
-            evt => fullViewCard(evt)
+            deleteCard,
+            addCardLike,
+            fullViewCard
         )
     );
-    formAddcard.reset();
-    popupCreateCard.classList.remove('popup_is-opened');
+    formAddcard.reset();     
+    closePopup(popupCreateCard);    
 };
 
-formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
