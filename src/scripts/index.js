@@ -17,6 +17,14 @@ popupArr.map(item => {
     item.classList.add('popup_is-animated');
 });
 
+// Обработчик нажантия на кнопоку закрытия(крестик) модального окна закреплен за каждой кнопкой 
+const allCloseBtn = document.querySelectorAll('.popup__close');
+const closeBtnpArr = Array.from(allCloseBtn);
+closeBtnpArr.map(item => {
+    item.addEventListener('click', evt => closePopup(evt.target.closest('.popup')));
+});
+ 
+
 // Темплейт карточки
 export const card = document.querySelector('#card-template').content;
 

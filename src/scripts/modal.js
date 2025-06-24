@@ -11,7 +11,7 @@ export function closePopup(popup) {
   if (popup) {
     popup.classList.remove('popup_is-opened');
     popup.removeEventListener('click', closePopupByOverlay);
-    popup.removeEventListener('keydown', closePopupByEsc);
+    document.removeEventListener('keydown', closePopupByEsc);
   }
 };
 
@@ -29,10 +29,3 @@ function closePopupByEsc(evt) {
   }
 };
 
-// Обработчик нажантия на кнопоку закрытия(крестик) модального окна закреплен за каждой кнопкой 
-const allCloseBtn = document.querySelectorAll('.popup__close');
-const closeBtnpArr = Array.from(allCloseBtn);
-closeBtnpArr.map(item => {
-    item.addEventListener('click', evt => closePopup(evt.target.closest('.popup')));
-});
- 
