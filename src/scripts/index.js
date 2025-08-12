@@ -104,4 +104,3 @@ function handleAddUserCard(evt) {
     formAddcard.reset();     
     closePopup(popupCreateCard);    
 };
-

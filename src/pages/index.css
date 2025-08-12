@@ -11,3 +11,18 @@
 @import url('../blocks/popup/_is-animated/popup_is-animated.css');
 @import url('../blocks/popup/_is-opened/popup_is-opened.css');
 
+.button-is-not-active {
+    color: grey;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, .2);
+}
+
+.form__input_type_error {
+    border-bottom: 1px solid #FF0000;
+    /* Нижняя рамка становится красной всякий раз, 
+  когда введённые данные некорректны  */
+}
+
+.form__input-error {
+    color:  #FF0000;
+}
