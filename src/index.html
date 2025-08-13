@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">d
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mesto</title>
 </head>
@@ -50,8 +50,10 @@
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Новое место</h3>
       <form class="popup__form" name="new_place">
-        <input type="text" name="place_name" class="popup__input popup__input_type_card-name" placeholder="Название" required minlength="2" maxlength="30">
-        <input type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <input type="text" id="new_place-place_name-input" name="place_name" class="popup__input popup__input_type_card-name" placeholder="Название" required minlength="2" maxlength="30">
+        <span class="new_place-place_name-input-error form__input-error"></span> 
+        <input type="url" id="new_place-link-input" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <span class="new_place-link-input-error form__input-error"></span> 
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>

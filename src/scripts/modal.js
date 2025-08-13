@@ -29,38 +29,105 @@ function closePopupByEsc(evt) {
   }
 };
 
-const popForm = document.querySelector('.popup__form');
-const popInp = popForm.querySelector('.popup__input');
-const formErr = popForm.querySelector(`.${popInp.id}-error`);
-console.log(`.${popInp.id}-error`);
-
-// Вызовем функцию isValid на каждый ввод символа
-popInp.addEventListener('input', () => isValid()); 
-// popInp.addEventListener('input', () => console.log('hello')); 
 
 
-// Передадим текст ошибки вторым параметром
-const showInputError = (element, errorMessage) => {
-  element.classList.add('form__input_type_error');
-  // Заменим содержимое span с ошибкой на переданный параметр
-  formErr.textContent = errorMessage;
-  formErr.classList.add('form__input-error_active');
+// Функция принимает массив полей
+
+const hasInvalidInput = (inputList) => {
+  // проходим по этому массиву методом some
+  return inputList.some((inputElement) => {
+        // Если поле не валидно, колбэк вернёт true
+    // Обход массива прекратится и вся функция
+    // hasInvalidInput вернёт true
+
+    return !inputElement.validity.valid;
+  })
 };
 
-const hideInputError = (element) => {
-  element.classList.remove('form__input_type_error');
-  formErr.classList.remove('form__input-error_active');
-  // Очистим ошибку
-  formErr.textContent = '';
-};
 
-const isValid = () => {
-  console.log('hello');
-  if (!popInp.validity.valid) {
-    // Передадим сообщение об ошибке вторым аргументом
-    showInputError(popInp, popInp.validationMessage);
+
+// Функция принимает массив полей ввода
+// и элемент кнопки, состояние которой нужно менять
+
+const toggleButtonState = (inputList, buttonElement) => {
+  // Если есть хотя бы один невалидный инпут
+  console.log(buttonElement)
+  if (hasInvalidInput(inputList)) {
+    // сделай кнопку неактивной
+        buttonElement.disabled = true;
+    buttonElement.classList.add('button-is-not-active');
+        buttonElement.classList.add('popup__button:hover');
+
   } else {
-    hideInputError(popInp);
+        // иначе сделай кнопку активной
+        buttonElement.disabled = false;
+        buttonElement.classList.remove('button-is-not-active');
+        buttonElement.classList.remove('popup__button:hover');
+        
   }
 };
+
+
+
+
+
+const setEventListeners = (formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+  // console.log(inputList)
+
+  const buttonElement = formElement.querySelector('.button');
+  toggleButtonState(inputList, buttonElement);
+
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener('input', () => {
+ toggleButtonState(inputList, buttonElement);
+      checkInputValidity(formElement, inputElement);
+    });
+  });
+};
+
+
+const enableValidation = () => {
+  // Найдём все формы с указанным классом в DOM,
+  // сделаем из них массив методом Array.from
+  const formList = Array.from(document.querySelectorAll('.popup__form'));
+  // console.log(formList)
+  // Переберём полученную коллекцию
+  formList.forEach((formElement) => {
+    // Для каждой формы вызовем функцию setEventListeners,
+    // передав ей элемент формы
+    setEventListeners(formElement);
+  });
+};
+
+// Вызовем функцию
+enableValidation();
+
+const showInputError = (formElement, inputElement, errorMessage) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.add('form__input_type_error');
+  errorElement.textContent = errorMessage;
+  errorElement.classList.add('form__input-error_active');
+};
+
+const hideInputError = (formElement, inputElement) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.remove('form__input_type_error');
+  errorElement.classList.remove('form__input-error_active');
+  errorElement.textContent = '';
+};
+
+
+const checkInputValidity = (formElement, inputElement) => {
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  } else {
+    hideInputError(formElement, inputElement);
+  }
+};
+
+
+
+
+
 
