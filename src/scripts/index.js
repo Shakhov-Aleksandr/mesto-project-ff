@@ -10,6 +10,12 @@ import {
     closePopup
 } from '../scripts/modal.js';
 
+import {
+    validationConfig, 
+    enableValidation,
+    clearValidation
+} from '../scripts/validation.js';
+
 // Анимирование модальных окон
 const allPopups = document.querySelectorAll('.popup');
 const popupArr = Array.from(allPopups);
@@ -69,6 +75,8 @@ profileButton.addEventListener('click', () => {
     const jobFieldInPopup = formEditProfile.elements.description;
     nameFieldInPopup.value = nameInput.textContent;
     jobFieldInPopup.value = jobInput.textContent;
+    clearValidation(popupProfile, validationConfig);
+
     openPopup(popupProfile);
 });
 
@@ -84,9 +92,17 @@ function handleProfileSubmit(evt) {
 //Блок отвечает за вывод модального окна, дабавляющего кастомную карточку 
 const newCardBtn = document.querySelector('.profile__add-button');
 const popupCreateCard = document.querySelector('.popup_type_new-card');
-newCardBtn.addEventListener('click', () => openPopup(popupCreateCard));
-
 const formAddcard = document.forms.new_place;
+
+newCardBtn.addEventListener('click', () => {
+    formAddcard.place_name.value="";
+    formAddcard.link.value="";
+    openPopup(popupCreateCard)
+    clearValidation(popupCreateCard, validationConfig);
+    }
+);
+    
+
 formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
 function handleAddUserCard(evt) {
     evt.preventDefault();
@@ -101,6 +117,42 @@ function handleAddUserCard(evt) {
             fullViewCard
         )
     );
-    formAddcard.reset();     
+    formAddcard.reset();    
+
     closePopup(popupCreateCard);    
 };
+
+
+
+
+enableValidation(validationConfig);
+
+
+ fetch('https://nomoreparties.co/v1/wff-cohort-41/cards', {
+  headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
+  }
+})
+  .then(res => res.json())
+  .then((result) => {
+    console.log(result);
+  }); 
+
+  
+
+
+
+fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
+  headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
+  }
+})
+  .then((res) => {
+    return res.json();
+  })
+  .then((data) => {
+      console.log(data.user); // если мы попали в этот then, data — это объект
+  })
+  .catch((err) => {
+    console.log('Ошибка. Запрос не выполнен: ', err);
+  });

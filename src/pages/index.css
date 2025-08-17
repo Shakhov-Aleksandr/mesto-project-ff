@@ -11,22 +11,22 @@
 @import url('../blocks/popup/_is-animated/popup_is-animated.css');
 @import url('../blocks/popup/_is-opened/popup_is-opened.css');
 
-.button-is-not-active {
+.popup__button_disabled {
     color: grey;
     background-color: white;
     border: 1px solid rgba(0, 0, 0, .2);
 }
 
-.button-is-not-active:hover {
+.popup__button_disabled:hover {
     background-color: white;
 }
 
-.form__input_type_error {
+.popup__input_type_error {
     border-bottom: 1px solid #FF0000;
     /* Нижняя рамка становится красной всякий раз, 
   когда введённые данные некорректны  */
 }
 
-.form__input-error {
+.popup__error_visible {
     color:  #FF0000;
 }
