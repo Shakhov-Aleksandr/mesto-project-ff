@@ -2,7 +2,7 @@
 import {card} from  '../scripts/index.js';
 
 // Функция создания карточки
-export function createCard(name, link, deleteCardHandler, addCardLikeHandler, fullViewCardHandler) {
+export function createCard(name, link, likesCount, deleteCardHandler, addCardLikeHandler, fullViewCardHandler) {
     const cardElement = card.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     cardImage.src = link;
@@ -10,6 +10,7 @@ export function createCard(name, link, deleteCardHandler, addCardLikeHandler, fu
     cardElement.querySelector('.card__title').textContent = name;
     cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCardHandler);
     cardElement.querySelector('.card__like-button').addEventListener('click', addCardLikeHandler);
+    cardElement.querySelector('.likes-count').textContent = likesCount;
     cardImage.addEventListener('click', () => fullViewCardHandler(name, link));
     return cardElement;
 }

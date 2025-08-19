@@ -74,6 +74,7 @@ const placeList = content.querySelector('.places__list');
         createCard(
             card.name,
             card.link,
+            card.likes.length,
             deleteCard,
             addCardLike,
             fullViewCard
@@ -114,20 +115,20 @@ function fullViewCard(name, link) {
 
 
 
-// fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
-//   headers: {
-//     authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
-//   }
-// })
-//   .then((res) => {
-//     return res.json();
-//   })
-//   .then((data) => {
-//       console.log(data); 
-//   })
-//   .catch((err) => {
-//     console.log('Ошибка. Запрос не выполнен: ', err);
-//   });
+fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
+  headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
+  }
+})
+  .then((res) => {
+    return res.json();
+  })
+  .then((data) => {
+      console.log(data); 
+  })
+  .catch((err) => {
+    console.log('Ошибка. Запрос не выполнен: ', err);
+  });
 
 
 
@@ -156,7 +157,7 @@ fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
 
 }
 
-const sentInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
+const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
   // console.log(nameInput.textContent,' ', jobInput.textContent)
   fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
   method: 'PATCH',
@@ -170,7 +171,19 @@ const sentInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
   })
 });
 }
+  
+const deleteCardFromServer = (cardID) => {
+fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/${cardID}`, {
+   method: 'DELETE',
+    headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
+  }
+})
 
+}
+
+
+// deleteCardFromServer("68a46e09b3fbd11927a887b4")
 
 //Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
 export const nameInput = document.querySelector('.profile__title');
@@ -199,7 +212,7 @@ function handleProfileSubmit(evt) {
     const jobFieldInPopup = formEditProfile.elements.description;
     nameInput.textContent = nameFieldInPopup.value;
     jobInput.textContent = jobFieldInPopup.value;
-    sentInfoAboutMe(nameFieldInPopup, jobFieldInPopup);
+    sendInfoAboutMe(nameFieldInPopup, jobFieldInPopup);
     getInfoAboutMe(nameInput, jobInput);
     closePopup(popupProfile);
 };
@@ -217,6 +230,33 @@ newCardBtn.addEventListener('click', () => {
     }
 );
     
+const sendCardToServer = (card) => {
+
+  fetch('https://nomoreparties.co/v1//wff-cohort-41/cards', {
+  method: 'POST',
+  headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: card.name,
+    link: card.link 
+  })
+});
+
+
+}
+
+
+// fetch('https://example.com', {
+//   method: 'POST',
+//   body: JSON.stringify({
+//     name: 'Иван',
+//     age: 30
+//   })
+// });
+
+
 
 formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
 function handleAddUserCard(evt) {
@@ -227,11 +267,15 @@ function handleAddUserCard(evt) {
         createCard(
             card.name,
             card.link,
+            0,
             deleteCard,
             addCardLike,
             fullViewCard
         )
     );
+
+    sendCardToServer(card);
+
     formAddcard.reset();    
 
     closePopup(popupCreateCard);    
@@ -243,15 +287,15 @@ function handleAddUserCard(evt) {
 enableValidation(validationConfig);
 
 
-//  fetch('https://nomoreparties.co/v1/wff-cohort-41/cards', {
-//   headers: {
-//     authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
-//   }
-// })
-//   .then(res => res.json())
-//   .then((result) => {
-//     console.log(result);
-//   }); 
+ fetch('https://nomoreparties.co/v1/wff-cohort-41/cards', {
+  headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
+  }
+})
+  .then(res => res.json())
+  .then((result) => {
+    console.log(result);
+  }); 
 
   
 
