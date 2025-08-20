@@ -16,6 +16,13 @@ import {
     clearValidation
 } from '../scripts/validation.js';
 
+
+import {
+    getInitialCards,
+    getID
+} from '../scripts/api.js';
+
+
 // Анимирование модальных окон
 const allPopups = document.querySelectorAll('.popup');
 const popupArr = Array.from(allPopups);
@@ -32,7 +39,7 @@ closeBtnpArr.map(item => {
  
 
 // Темплейт карточки
-export const card = document.querySelector('#card-template').content;
+ export const cardTemplate = document.querySelector('#card-template').content;
 
 // DOM узлы
 const content = document.querySelector('.content');
@@ -61,20 +68,27 @@ const placeList = content.querySelector('.places__list');
 
 
 
-  fetch('https://nomoreparties.co/v1/wff-cohort-41/cards', {
-  headers: {
-    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
-    method: 'GET'
-  }
-})
-  .then((res) => {
-    return res.json();
-  })
-  .then(data => data.forEach(card => placeList.append(
+
+// Promise.all([getID(), getCards()])
+//   .then(([user, cards]) => {
+//     setUserInfo(user);
+//     renderCards(cards, callbacksObject, user._id);
+//   })
+//   .catch((err) => {
+//     console.error("Произошла ошибка при получении данных:", err);
+//   });
+
+
+
+
+Promise.all([getInitialCards(), getID()])
+  .then(([cards, me]) => cards.forEach(card => placeList.append(
         createCard(
             card.name,
             card.link,
+            card.owner._id,
             card.likes.length,
+            me._id,
             deleteCard,
             addCardLike,
             fullViewCard
@@ -86,6 +100,13 @@ const placeList = content.querySelector('.places__list');
     console.log('Ошибка. Запрос не выполнен: ', err);
   });
 
+
+  getID()
+  .then(data => console.log(data)
+  )
+  .catch((err) => {
+    console.log('Ошибка. Запрос не выполнен: ', err);
+  });
 
 
 // Вывести дефолтные карточки на страницу
@@ -154,7 +175,6 @@ fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
       console.log('Ошибка. Запрос не выполнен: ', err);
     }
   );
-
 }
 
 const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
@@ -183,7 +203,7 @@ fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/${cardID}`, {
 }
 
 
-// deleteCardFromServer("68a46e09b3fbd11927a887b4")
+// deleteCardFromServer("68a5c91b418a581933f17257")
 
 //Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
 export const nameInput = document.querySelector('.profile__title');
@@ -230,7 +250,7 @@ newCardBtn.addEventListener('click', () => {
     }
 );
     
-const sendCardToServer = (card) => {
+const sendCardToServer = (name, link) => {
 
   fetch('https://nomoreparties.co/v1//wff-cohort-41/cards', {
   method: 'POST',
@@ -239,8 +259,8 @@ const sendCardToServer = (card) => {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    name: card.name,
-    link: card.link 
+    name: name,
+    link: link 
   })
 });
 
@@ -261,20 +281,24 @@ const sendCardToServer = (card) => {
 formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
 function handleAddUserCard(evt) {
     evt.preventDefault();
-    card.name = formAddcard.elements.place_name.value;
-    card.link = formAddcard.elements.link.value;
+    // card.name = formAddcard.elements.place_name.value;
+    // card.link = formAddcard.elements.link.value;
+    // card.likes = {};
+    // card.owner._id = "f0173b2fceb8a6f592738266";
     placeList.prepend(
         createCard(
-            card.name,
-            card.link,
+            formAddcard.elements.place_name.value,
+            formAddcard.elements.link.value,
+            "f0173b2fceb8a6f592738266",
             0,
+            "f0173b2fceb8a6f592738266",
             deleteCard,
             addCardLike,
             fullViewCard
         )
     );
 
-    sendCardToServer(card);
+    sendCardToServer(formAddcard.elements.place_name.value, formAddcard.elements.link.value);
 
     formAddcard.reset();    
 
