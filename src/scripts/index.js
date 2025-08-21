@@ -46,67 +46,29 @@ const content = document.querySelector('.content');
 const placeList = content.querySelector('.places__list');
 
 
+const rendCards = () => {
+  placeList.innerHTML = "";
 
-// const getUserDataPromise = fetch('/api/user').then(response => response.json());
-// const getCardsPromise = fetch('/api/cards').then(response => response.json());
-
-// Promise.all([getUserDataPromise, getCardsPromise])
-//   .then(([userData, cards]) => {
-//     const userId = userData._id;
-//     // Здесь вы можете отобразить карточки с учётом userId
-//     console.log('Пользователь:', userData);
-//     console.log('Карточки:', cards);
-//   })
-//   .catch(error => {
-//     console.error('Ошибка при загрузке данных:', error);
-//   });
-
-// const getCardsPromise = fetch('https://nomoreparties.co/v1/wff-cohort-41/cards', { headers: { authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7', method: 'GET' }}).then((res) => {
-//     return res.json();
-//   });
-  
-
-
-
-
-// Promise.all([getID(), getCards()])
-//   .then(([user, cards]) => {
-//     setUserInfo(user);
-//     renderCards(cards, callbacksObject, user._id);
-//   })
-//   .catch((err) => {
-//     console.error("Произошла ошибка при получении данных:", err);
-//   });
-
-
-
-
-Promise.all([getInitialCards(), getID()])
-  .then(([cards, me]) => cards.forEach(card => placeList.append(
+  Promise.all([getInitialCards(), getID()])
+  .then(
+    ([cards, me]) => cards.forEach(
+      card => placeList.append(
         createCard(
-            card.name,
-            card.link,
-            card.owner._id,
-            card.likes.length,
-            me._id,
-            deleteCard,
-            addCardLike,
-            fullViewCard
-       )
+          card,
+           me._id,
+          deleteCard,
+          addCardLike,
+          fullViewCard
+        ) 
       )
     )
   )
-  .catch((err) => {
-    console.log('Ошибка. Запрос не выполнен: ', err);
-  });
+  .catch((err) => {console.log('Ошибка. Запрос не выполнен: ', err)});
+}
 
 
-  getID()
-  .then(data => console.log(data)
-  )
-  .catch((err) => {
-    console.log('Ошибка. Запрос не выполнен: ', err);
-  });
+
+rendCards();
 
 
 // Вывести дефолтные карточки на страницу
@@ -178,7 +140,6 @@ fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
 }
 
 const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
-  // console.log(nameInput.textContent,' ', jobInput.textContent)
   fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
   method: 'PATCH',
   headers: {
@@ -192,18 +153,7 @@ const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
 });
 }
   
-const deleteCardFromServer = (cardID) => {
-fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/${cardID}`, {
-   method: 'DELETE',
-    headers: {
-    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
-  }
-})
 
-}
-
-
-// deleteCardFromServer("68a5c91b418a581933f17257")
 
 //Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
 export const nameInput = document.querySelector('.profile__title');
@@ -268,42 +218,17 @@ const sendCardToServer = (name, link) => {
 }
 
 
-// fetch('https://example.com', {
-//   method: 'POST',
-//   body: JSON.stringify({
-//     name: 'Иван',
-//     age: 30
-//   })
-// });
 
-
-
-formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
-function handleAddUserCard(evt) {
+const handleAddUserCard = (evt) => {
     evt.preventDefault();
-    // card.name = formAddcard.elements.place_name.value;
-    // card.link = formAddcard.elements.link.value;
-    // card.likes = {};
-    // card.owner._id = "f0173b2fceb8a6f592738266";
-    placeList.prepend(
-        createCard(
-            formAddcard.elements.place_name.value,
-            formAddcard.elements.link.value,
-            "f0173b2fceb8a6f592738266",
-            0,
-            "f0173b2fceb8a6f592738266",
-            deleteCard,
-            addCardLike,
-            fullViewCard
-        )
-    );
-
     sendCardToServer(formAddcard.elements.place_name.value, formAddcard.elements.link.value);
-
+    const timerId = setTimeout(() => {rendCards()}, 2000);
     formAddcard.reset();    
-
     closePopup(popupCreateCard);    
 };
+
+formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
+
 
 
 
