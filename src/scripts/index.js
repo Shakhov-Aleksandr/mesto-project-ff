@@ -98,6 +98,9 @@ function fullViewCard(name, link) {
 
 
 
+
+
+
 fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
   headers: {
     authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
@@ -111,11 +114,87 @@ fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
   })
   .catch((err) => {
     console.log('Ошибка. Запрос не выполнен: ', err);
-  });
+  }
+);
+
+
+// const sendProfile
 
 
 
 
+const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
+  return fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
+    method: 'PATCH',
+    headers: {
+      authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: nameFieldInPopup.value,
+      about: jobFieldInPopup.value
+    })
+  })
+}
+
+
+
+
+const profileImage = document.querySelector('.profile__image');
+
+profileImage.addEventListener("click", () => {
+  avatarForm.elements.link.value = "";
+
+  clearValidation(popupAvatarImage, validationConfig);
+  openPopup(popupAvatarImage);
+})
+
+
+
+const popupAvatarImage = document.querySelector('.popup_avatar-image');
+const avatarForm = document.forms.avatar;
+avatarForm.addEventListener('submit', evt => heandlerAddNewAvatarImage(evt));
+const heandlerAddNewAvatarImage = evt => {
+  evt.preventDefault();
+  const avatarLink = avatarForm.elements.link;
+sendAvatarImageLinkToServer(avatarLink.value)
+getAvatarImageLinkFromServer();
+
+  avatarForm.reset();
+  closePopup(popupAvatarImage);
+}
+
+
+const sendAvatarImageLinkToServer = link => {
+  return fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me/avatar', {
+    method: 'PATCH',
+    headers: {
+      authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      avatar: link
+    })
+  })
+}
+
+
+const getAvatarImageLinkFromServer = () => {
+  getID().then(me => 
+    profileImage.style.backgroundImage= `url(${me.avatar})`)
+}
+
+getAvatarImageLinkFromServer();
+
+
+
+//Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
+export const nameInput = document.querySelector('.profile__title');
+export const jobInput = document.querySelector('.profile__description');
+export const formEditProfile = document.forms.edit_profile;
+formEditProfile.addEventListener('submit', evt => handleProfileSubmit(evt));
+
+    
 const getInfoAboutMe = (nameInput, jobInput) => {
 
 fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
@@ -136,32 +215,11 @@ fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
   .catch((err) => {
       console.log('Ошибка. Запрос не выполнен: ', err);
     }
-  );
+  )
 }
+   
 
-const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
-  fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
-  method: 'PATCH',
-  headers: {
-    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: nameFieldInPopup.value,
-    about: jobFieldInPopup.value
-  })
-});
-}
-  
-
-
-//Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
-export const nameInput = document.querySelector('.profile__title');
-export const jobInput = document.querySelector('.profile__description');
-export const formEditProfile = document.forms.edit_profile;
-formEditProfile.addEventListener('submit', evt => handleProfileSubmit(evt));
-
-    getInfoAboutMe(nameInput, jobInput);
+getInfoAboutMe(nameInput, jobInput);
 
 
 const popupProfile = document.querySelector('.popup_type_edit');
@@ -173,8 +231,19 @@ profileButton.addEventListener('click', () => {
     jobFieldInPopup.value = jobInput.textContent;
     clearValidation(popupProfile, validationConfig);
     openPopup(popupProfile);
-  }
-);
+});
+
+
+
+const renderLoader = (isLoading, btn) => {
+    if (isLoading == true) {
+      btn.textContent = "Сохранение...";
+    }
+    else {
+      btn.textContent = "Сохранить";
+    }
+} 
+
 
 function handleProfileSubmit(evt) {
     evt.preventDefault();
@@ -182,10 +251,22 @@ function handleProfileSubmit(evt) {
     const jobFieldInPopup = formEditProfile.elements.description;
     nameInput.textContent = nameFieldInPopup.value;
     jobInput.textContent = jobFieldInPopup.value;
-    sendInfoAboutMe(nameFieldInPopup, jobFieldInPopup);
+
+
+    const btn = evt.target.querySelector(".button");
+    renderLoader(true, btn);
+    
+    sendInfoAboutMe(nameFieldInPopup, jobFieldInPopup).finally(() => renderLoader(false, btn));
     getInfoAboutMe(nameInput, jobInput);
+
+
+    formEditProfile.reset();
     closePopup(popupProfile);
 };
+
+
+
+
 
 //Блок отвечает за вывод модального окна, дабавляющего кастомную карточку 
 const newCardBtn = document.querySelector('.profile__add-button');
