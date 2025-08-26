@@ -1,17 +1,6 @@
 
 import {cardTemplate} from  '../scripts/index.js';
-
-
-const deleteCardFromServer = (cardID) => {
-fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/${cardID}`, {
-   method: 'DELETE',
-    headers: {
-    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
-  }
-})
-
-}
-
+import { openPopup } from './modal.js';
 
 
 
@@ -61,7 +50,11 @@ export function createCard(card, id, deleteCardHandler, addCardLikeHandler, full
     cardLikesCount.textContent = card.likes.length;
 
     cardElement.querySelector('.card__title').textContent = card.name;
-    cardDeleteBtn.addEventListener('click', deleteCardHandler);
+    // cardDeleteBtn.addEventListener('click', deleteCardHandler);
+
+    
+   
+
     cardLikeBtn.addEventListener('click', (evt) => addCardLikeHandler(evt, card._id));
 
 
@@ -82,16 +75,17 @@ export function createCard(card, id, deleteCardHandler, addCardLikeHandler, full
 
     cardImage.addEventListener('click', () => fullViewCardHandler(card.name, card.link));
     
-    if (card.owner._id != id) {
-        // card__delete-button-disabled
-        cardDeleteBtn.classList.add('card__delete-button-disabled');
-    } else {
-        cardDeleteBtn.addEventListener("click", () => {
-            deleteCardFromServer(card._id);
-        })
-    }
 
+    renderDeleteCardBtn(cardDeleteBtn, card._id, card.owner._id, id);
     
+
+
+
+
+
+    return cardElement;
+}
+
 //       /// проверка на авторство карточки
 //   if (card.owner._id !== profileId) {
 //     deleteButton.classList.add("element__delete-unactive");
@@ -104,11 +98,51 @@ export function createCard(card, id, deleteCardHandler, addCardLikeHandler, full
 //     });
 //   }
 
+const deleteCardFromServer = (cardID) => {
+fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/${cardID}`, {
+   method: 'DELETE',
+    headers: {
+    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
+  }
+})
 
-
-
-    return cardElement;
 }
+
+
+const popupDeleteCard = document.querySelector('.popup_delete_card');
+const formDeleteCard = document.forms.delete_card;
+
+
+const renderDeleteCardBtn = (btn, cardID, cardOwnerID, myID) => {
+    if (cardOwnerID != myID) {
+        // card__delete-button-disabled
+        btn.classList.add('card__delete-button-disabled');
+    } 
+    else {
+        btn.addEventListener('click', () => {
+            
+            openPopup(popupDeleteCard)
+      
+        })
+    }
+}
+
+formDeleteCard.addEventListener('submit', evt => handlerDeleteCard(evt));
+const handlerDeleteCard = () => {
+
+}
+
+// avatarForm.addEventListener('submit', evt => heandlerAddNewAvatarImage(evt));
+// const heandlerAddNewAvatarImage = evt => {
+//   evt.preventDefault();
+//   const avatarLink = avatarForm.elements.link;
+//   sendAvatarImageLinkToServer(avatarLink.value)
+//   getAvatarImageLinkFromServer();
+
+//   avatarForm.reset();
+//   closePopup(popupAvatarImage);
+// }
+
 
 // Функция удаления карточки
 export function deleteCard(evt) {

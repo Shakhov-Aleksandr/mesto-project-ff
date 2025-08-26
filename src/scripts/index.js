@@ -142,7 +142,10 @@ const sendInfoAboutMe = (nameFieldInPopup, jobFieldInPopup) => {
 
 const profileImage = document.querySelector('.profile__image');
 
-profileImage.addEventListener("click", () => {
+const avatarBtn = document.querySelector('.profile__avatar-image-edit');
+
+
+avatarBtn.addEventListener("click", () => {
   avatarForm.elements.link.value = "";
 
   clearValidation(popupAvatarImage, validationConfig);
@@ -157,8 +160,8 @@ avatarForm.addEventListener('submit', evt => heandlerAddNewAvatarImage(evt));
 const heandlerAddNewAvatarImage = evt => {
   evt.preventDefault();
   const avatarLink = avatarForm.elements.link;
-sendAvatarImageLinkToServer(avatarLink.value)
-getAvatarImageLinkFromServer();
+  sendAvatarImageLinkToServer(avatarLink.value)
+  getAvatarImageLinkFromServer();
 
   avatarForm.reset();
   closePopup(popupAvatarImage);
@@ -272,6 +275,9 @@ function handleProfileSubmit(evt) {
 const newCardBtn = document.querySelector('.profile__add-button');
 const popupCreateCard = document.querySelector('.popup_type_new-card');
 const formAddcard = document.forms.new_place;
+
+
+
 
 newCardBtn.addEventListener('click', () => {
     formAddcard.place_name.value="";

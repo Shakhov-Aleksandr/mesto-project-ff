@@ -7,6 +7,12 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  transition: .3s;
+
+}
+
+.profile__avatar-image-edit:hover ~ .profile__image {
+  opacity: .5;
 }
 
 @media screen and (max-width: 740px) {

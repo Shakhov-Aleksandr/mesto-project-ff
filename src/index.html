@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">d
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mesto</title>
 </head>
@@ -14,6 +14,7 @@
   </header>
   <main class="content">
     <section class="profile page__section">
+      <button class="profile__avatar-image-edit"></button>
       <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>)"></div>
       <div class="profile__info">
         <h1 class="profile__title">Жак-Ив Кусто</h1>
@@ -127,7 +128,7 @@
   <div class="popup__content">
       <button class="popup__close" type="button"></button>
       <h2 class="popup__title">Вы уверены?</h2>
-      <form class="popup__form" name="delete-card">
+      <form class="popup__form" name="delete_card">
         <button class="popup__button popup__button_delete-card" type="submit">Да</button>
       </form>
   </div>
