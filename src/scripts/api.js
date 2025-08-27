@@ -14,7 +14,6 @@ export const getInitialCards = () => {
     // ...
      .then(res => {
       if (res.ok) {
-        // console.log('hello')
         return res.json();
       }
       // если ошибка, отклоняем промис
@@ -22,6 +21,15 @@ export const getInitialCards = () => {
     })
     .then(data => {return data});
 } 
+
+
+
+export const deleteCardFromServer = (cardID) => {
+  return fetch(`${config.baseUrl}/cards/${cardID}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+}
 
 
 

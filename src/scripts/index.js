@@ -1,8 +1,9 @@
 import '../pages/index.css';
 import initialCards from '../scripts/card_list.js';
 import {
+  configForDeletingCard,
     createCard,
-    deleteCard,
+    deleteCardFromPage,
     addCardLike
 } from '../scripts/card.js';
 import {
@@ -19,8 +20,11 @@ import {
 
 import {
     getInitialCards,
-    getID
+    getID,
+    deleteCardFromServer
 } from '../scripts/api.js';
+
+
 
 
 // Анимирование модальных окон
@@ -56,7 +60,7 @@ const rendCards = () => {
         createCard(
           card,
            me._id,
-          deleteCard,
+          // deleteCard,
           addCardLike,
           fullViewCard
         ) 
@@ -337,5 +341,17 @@ enableValidation(validationConfig);
 
 
 
+export const popupDeleteCard = document.querySelector('.popup_delete_card');
 
+const formDeleteCard = document.forms.delete_card;
+formDeleteCard.addEventListener('submit', evt => handlerDeleteCard(evt));
+const handlerDeleteCard = (evt) => {
+  evt.preventDefault();
+console.log(configForDeletingCard)
+  deleteCardFromServer(configForDeletingCard.cardID);
+  deleteCardFromPage(configForDeletingCard.cardInPage);
 
+configForDeletingCard.cardID = "";
+configForDeletingCard.cardInPage = "";
+closePopup(popupDeleteCard)
+}

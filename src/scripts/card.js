@@ -1,6 +1,7 @@
 
 import {cardTemplate} from  '../scripts/index.js';
-import { openPopup } from './modal.js';
+import {openPopup} from './modal.js';
+import {popupDeleteCard} from '../scripts/index.js';
 
 
 
@@ -39,7 +40,7 @@ const send_or_deleteLikeInServer = (isLiked, cardID, viewCount, count) => {
 
 
 // Функция создания карточки
-export function createCard(card, id, deleteCardHandler, addCardLikeHandler, fullViewCardHandler) {
+export function createCard(card, id, /*deleteCardHandler,*/ addCardLikeHandler, fullViewCardHandler) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     const cardDeleteBtn = cardElement.querySelector('.card__delete-button');
@@ -76,7 +77,7 @@ export function createCard(card, id, deleteCardHandler, addCardLikeHandler, full
     cardImage.addEventListener('click', () => fullViewCardHandler(card.name, card.link));
     
 
-    renderDeleteCardBtn(cardDeleteBtn, card._id, card.owner._id, id);
+    renderDeleteCardBtn(cardDeleteBtn, cardElement, card._id, card.owner._id, id);
     
 
 
@@ -98,39 +99,30 @@ export function createCard(card, id, deleteCardHandler, addCardLikeHandler, full
 //     });
 //   }
 
-const deleteCardFromServer = (cardID) => {
-fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/${cardID}`, {
-   method: 'DELETE',
-    headers: {
-    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
-  }
-})
 
+
+
+export let configForDeletingCard = {
+    cardID : '',
+    cardInPage : ''
 }
 
-
-const popupDeleteCard = document.querySelector('.popup_delete_card');
-const formDeleteCard = document.forms.delete_card;
-
-
-const renderDeleteCardBtn = (btn, cardID, cardOwnerID, myID) => {
+const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
     if (cardOwnerID != myID) {
         // card__delete-button-disabled
         btn.classList.add('card__delete-button-disabled');
     } 
     else {
         btn.addEventListener('click', () => {
-            
+            configForDeletingCard.cardID = cardID;
+            configForDeletingCard.cardInPage = cardInPage;
             openPopup(popupDeleteCard)
       
         })
     }
 }
 
-formDeleteCard.addEventListener('submit', evt => handlerDeleteCard(evt));
-const handlerDeleteCard = () => {
 
-}
 
 // avatarForm.addEventListener('submit', evt => heandlerAddNewAvatarImage(evt));
 // const heandlerAddNewAvatarImage = evt => {
@@ -145,8 +137,8 @@ const handlerDeleteCard = () => {
 
 
 // Функция удаления карточки
-export function deleteCard(evt) {
-    evt.target.closest('.card').remove();
+export function deleteCardFromPage(card) {
+    card.remove();
 };
 
 // Функция добавления лайка
