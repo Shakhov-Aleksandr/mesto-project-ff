@@ -1,46 +1,11 @@
 
-import {cardTemplate} from  '../scripts/index.js';
+import {cardTemplate, popupDeleteCard} from  '../scripts/index.js';
 import {openPopup} from './modal.js';
-import {popupDeleteCard} from '../scripts/index.js';
-
-
-
-let myLike = [];
-
-
-const send_or_deleteLikeInServer = (isLiked, cardID, viewCount, count) => {
-    if(isLiked.classList.contains('card__like-button_is-active')) {
-        fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/likes/${cardID}`, { 
-            method: 'PUT',
-                headers: {
-                    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
-                }   
-            }
-        ) 
-        
-        viewCount.textContent = count + 1;
-    }
-    else {
-        fetch(`https://nomoreparties.co/v1/wff-cohort-41/cards/likes/${cardID}`, { 
-            method: 'DELETE',
-                headers: {
-                    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7'
-                }
-            }
-        ) 
-
-        count == 0 ? viewCount.textContent = 0 : viewCount.textContent = count - 1;
-
-    } 
-}
-
-
-
 
 
 
 // Функция создания карточки
-export function createCard(card, id, /*deleteCardHandler,*/ addCardLikeHandler, fullViewCardHandler) {
+export function createCard(card, id, deleteCardHandler, addCardLikeHandler, deleteCardLikeHandler, fullViewCardHandler) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     const cardDeleteBtn = cardElement.querySelector('.card__delete-button');
@@ -49,41 +14,47 @@ export function createCard(card, id, /*deleteCardHandler,*/ addCardLikeHandler, 
     cardImage.alt = card.name;
     cardImage.src = card.link;
     cardLikesCount.textContent = card.likes.length;
-
     cardElement.querySelector('.card__title').textContent = card.name;
-    // cardDeleteBtn.addEventListener('click', deleteCardHandler);
 
-    
-   
-
-    cardLikeBtn.addEventListener('click', (evt) => addCardLikeHandler(evt, card._id));
-
-
-
+    //отображаем поставленный мной лайк карточки, выгруженной с сервера
     card.likes.forEach(like => {
-    if (like._id == "f0173b2fceb8a6f592738266") {
-        myLike += card._id
-    }
-    
+        if (like._id == "f0173b2fceb8a6f592738266") {
+            rendLikeHeart(cardLikeBtn);
+        }
     });
 
-    if (myLike.includes(card._id)) {
-        cardLikeBtn.classList.toggle('card__like-button_is-active');
-    }
 
+    //вешаем слушателя на кнопку лайка. Если нажать на кнопку, то
+    cardLikeBtn.addEventListener('click', () => {
+        //если лайк есть - отправляем запрос удаления лайка в сервере, при успехе - лайк с карточки убирается
+        if(cardLikeBtn.classList.contains('card__like-button_is-active')) {
+            deleteCardLikeHandler(card._id)
+                .then((result) => {
+                    cardLikesCount.textContent = result.likes.length;
+                    rendLikeHeart(cardLikeBtn);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });  
+        }// если лайка нет - отправляем запрос на добавление лайка в сервере, при успехе - лайк на карточку добавляется
+        else {
+            addCardLikeHandler(card._id)
+                .then((result) => {
+                    cardLikesCount.textContent = result.likes.length;
+                    rendLikeHeart(cardLikeBtn);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });  
+        }
 
-    cardLikeBtn.addEventListener('click', () => send_or_deleteLikeInServer(cardLikeBtn, card._id, cardLikesCount, card.likes.length));
+    });
+
 
     cardImage.addEventListener('click', () => fullViewCardHandler(card.name, card.link));
     
-
     renderDeleteCardBtn(cardDeleteBtn, cardElement, card._id, card.owner._id, id);
     
-
-
-
-
-
     return cardElement;
 }
 
@@ -101,7 +72,6 @@ export function createCard(card, id, /*deleteCardHandler,*/ addCardLikeHandler, 
 
 
 
-
 export let configForDeletingCard = {
     cardID : '',
     cardInPage : ''
@@ -109,13 +79,16 @@ export let configForDeletingCard = {
 
 const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
     if (cardOwnerID != myID) {
-        // card__delete-button-disabled
+        btn.disabled = true;
         btn.classList.add('card__delete-button-disabled');
     } 
     else {
         btn.addEventListener('click', () => {
+           
             configForDeletingCard.cardID = cardID;
             configForDeletingCard.cardInPage = cardInPage;
+             console.log(cardInPage)
+            console.log(configForDeletingCard.cardInPage)
             openPopup(popupDeleteCard)
       
         })
@@ -136,17 +109,17 @@ const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
 // }
 
 
+
+
+//Функция отрисовки лайка
+const rendLikeHeart = heart => {
+    heart.classList.toggle('card__like-button_is-active');
+}
+
 // Функция удаления карточки
-export function deleteCardFromPage(card) {
+export function deleteCard(card) {
     card.remove();
 };
-
-// Функция добавления лайка
-export function addCardLike(evt, cardID) {
-    evt.target.classList.toggle('card__like-button_is-active');
-    myLike += cardID;
-};
-
 
 
 

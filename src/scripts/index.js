@@ -2,10 +2,12 @@ import '../pages/index.css';
 import initialCards from '../scripts/card_list.js';
 import {
   configForDeletingCard,
-    createCard,
-    deleteCardFromPage,
-    addCardLike
+  createCard,
+  deleteCard,
+  addCardLike,
+  deleteCardLike
 } from '../scripts/card.js';
+
 import {
     openPopup,
     closePopup
@@ -17,11 +19,13 @@ import {
     clearValidation
 } from '../scripts/validation.js';
 
-
 import {
     getInitialCards,
     getID,
-    deleteCardFromServer
+    deleteCardFromServer,
+    sendCardLikeToServer,
+    sendCardToServer,
+    deleteCardLikeFromServer
 } from '../scripts/api.js';
 
 
@@ -51,7 +55,7 @@ const placeList = content.querySelector('.places__list');
 
 
 const rendCards = () => {
-  placeList.innerHTML = "";
+  // placeList.innerHTML = "";
 
   Promise.all([getInitialCards(), getID()])
   .then(
@@ -59,9 +63,10 @@ const rendCards = () => {
       card => placeList.append(
         createCard(
           card,
-           me._id,
-          // deleteCard,
-          addCardLike,
+          me._id,
+          deleteCard,
+          sendCardLikeToServer,
+          deleteCardLikeFromServer,
           fullViewCard
         ) 
       )
@@ -122,7 +127,6 @@ fetch('https://nomoreparties.co/v1/wff-cohort-41/users/me', {
 );
 
 
-// const sendProfile
 
 
 
@@ -291,29 +295,26 @@ newCardBtn.addEventListener('click', () => {
     }
 );
     
-const sendCardToServer = (name, link) => {
 
-  fetch('https://nomoreparties.co/v1//wff-cohort-41/cards', {
-  method: 'POST',
-  headers: {
-    authorization: '305b30cb-0349-4bc6-ad31-8b3f0302eab7',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: name,
-    link: link 
-  })
-});
-
-
-}
 
 
 
 const handleAddUserCard = (evt) => {
     evt.preventDefault();
-    sendCardToServer(formAddcard.elements.place_name.value, formAddcard.elements.link.value);
-    const timerId = setTimeout(() => {rendCards()}, 2000);
+    sendCardToServer(formAddcard.elements.place_name.value, formAddcard.elements.link.value)
+      .then((card) => {
+         placeList.prepend(createCard(
+          card,
+          "f0173b2fceb8a6f592738266",
+          deleteCard,
+          sendCardLikeToServer,
+          deleteCardLikeFromServer,
+          fullViewCard
+        )) 
+      })
+      .catch((err) => {
+        console.log(err);
+      });  
     formAddcard.reset();    
     closePopup(popupCreateCard);    
 };
@@ -347,11 +348,16 @@ const formDeleteCard = document.forms.delete_card;
 formDeleteCard.addEventListener('submit', evt => handlerDeleteCard(evt));
 const handlerDeleteCard = (evt) => {
   evt.preventDefault();
-console.log(configForDeletingCard)
-  deleteCardFromServer(configForDeletingCard.cardID);
-  deleteCardFromPage(configForDeletingCard.cardInPage);
+  deleteCardFromServer(configForDeletingCard.cardID)
+    .then(() => {
+      console.log(configForDeletingCard.cardInPage);
 
-configForDeletingCard.cardID = "";
-configForDeletingCard.cardInPage = "";
-closePopup(popupDeleteCard)
+      configForDeletingCard.cardInPage.remove();
+    })
+    .catch((err) => {
+      console.log(err);
+    }); 
+  configForDeletingCard.cardID = "";
+  configForDeletingCard.cardInPage = "";
+  closePopup(popupDeleteCard)
 }
