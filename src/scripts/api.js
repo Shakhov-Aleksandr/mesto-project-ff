@@ -15,13 +15,9 @@ export const getInitialCards = () => {
       if (res.ok) {
         return res.json();
       }
-      // если ошибка, отклоняем промис
       return Promise.reject(`Ошибка: ${res.status}`);
     })
-    // .then(data => {return data});
 } 
-
-
 
 export const deleteCardFromServer = (cardID) => {
   return fetch(`${config.baseUrl}/cards/${cardID}`, {
@@ -32,7 +28,6 @@ export const deleteCardFromServer = (cardID) => {
       if (res.ok) {
         return res.json();
       }
-      // если ошибка, отклоняем промис
       return Promise.reject(`Ошибка: ${res.status}`);
   }); 
 }
@@ -46,7 +41,6 @@ export const deleteCardFromServer = (cardID) => {
         if (res.ok) {
           return res.json();
         }
-        // если ошибка, отклоняем промис
         return Promise.reject(`Ошибка: ${res.status}`);
       }); 
 }
@@ -60,24 +54,6 @@ export const deleteCardLikeFromServer = cardID => {
         if (res.ok) {
           return res.json();
         }
-        // если ошибка, отклоняем промис
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }); 
-}
-
-
-
-
-export const getID = () => {
-return fetch(`${config.baseUrl}/users/me`, {
-        method: "GET",
-        headers: config.headers
-    })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        // если ошибка, отклоняем промис
         return Promise.reject(`Ошибка: ${res.status}`);
       }); 
 }
@@ -98,7 +74,69 @@ export const sendCardToServer = (name, link) => {
         if (res.ok) {
           return res.json();
         }
-        // если ошибка, отклоняем промис
         return Promise.reject(`Ошибка: ${res.status}`);
       }); 
 }
+
+
+export const sendInfoAboutMeToServer = (nameFieldInPopup, jobFieldInPopup) => {
+  return fetch(`${config.baseUrl}/users/me`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: nameFieldInPopup.value,
+      about: jobFieldInPopup.value
+    })
+  })
+  .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }); 
+}
+
+export const getInfoAboutMeFromServer = () => {
+  return fetch(`${config.baseUrl}/users/me`, {
+        method: "GET",
+        headers: config.headers
+  })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    }); 
+}
+   
+export const sendAvatarImageLinkToServer = link => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+       method: 'PATCH',
+       headers: config.headers,
+       body: JSON.stringify({
+         avatar: link
+       })
+  })
+  .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    }); 
+}
+
+
+
+  // .then((res) => {
+  //     return res.json();
+  //   }
+  // )
+  // .then((data) => {
+  //     nameInput.textContent = data.name;
+  //     jobInput.textContent = data.about; 
+  //   }
+  // )
+  // .catch((err) => {
+  //     console.log('Ошибка. Запрос не выполнен: ', err);
+  //   }
+  // )

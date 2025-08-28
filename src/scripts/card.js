@@ -5,7 +5,7 @@ import {openPopup} from './modal.js';
 
 
 // Функция создания карточки
-export function createCard(card, id, deleteCardHandler, addCardLikeHandler, deleteCardLikeHandler, fullViewCardHandler) {
+export function createCard(card, id, addCardLikeHandler, deleteCardLikeHandler, fullViewCardHandler) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     const cardDeleteBtn = cardElement.querySelector('.card__delete-button');
@@ -71,11 +71,9 @@ export function createCard(card, id, deleteCardHandler, addCardLikeHandler, dele
 //   }
 
 
+export let cardIDForDelete = "";
+export let cardElementForDelete = "";
 
-export let configForDeletingCard = {
-    cardID : '',
-    cardInPage : ''
-}
 
 const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
     if (cardOwnerID != myID) {
@@ -85,11 +83,9 @@ const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
     else {
         btn.addEventListener('click', () => {
            
-            configForDeletingCard.cardID = cardID;
-            configForDeletingCard.cardInPage = cardInPage;
-             console.log(cardInPage)
-            console.log(configForDeletingCard.cardInPage)
-            openPopup(popupDeleteCard)
+            cardIDForDelete = cardID;
+            cardElementForDelete = cardInPage;
+            openPopup(popupDeleteCard);
       
         })
     }
