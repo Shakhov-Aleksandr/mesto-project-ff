@@ -9,28 +9,30 @@ import {
 } from '../scripts/card.js';
 
 import {
-    openPopup,
-    closePopup
+  openPopup,
+  closePopup
 } from '../scripts/modal.js';
 
 import {
-    validationConfig, 
-    enableValidation,
-    clearValidation
+  validationConfig, 
+  enableValidation,
+  clearValidation
 } from '../scripts/validation.js';
 
 import {
-    getInitialCards,
-    getInfoAboutMeFromServer,
-    deleteCardFromServer,
-    sendCardLikeToServer,
-    sendCardToServer,
-    deleteCardLikeFromServer,
-    sendInfoAboutMeToServer,
-    sendAvatarImageLinkToServer
+  myID,
+  getInitialCards,
+  getInfoAboutMeFromServer,
+  deleteCardFromServer,
+  sendCardLikeToServer,
+  sendCardToServer,
+  deleteCardLikeFromServer,
+  sendInfoAboutMeToServer,
+  sendAvatarImageLinkToServer
 } from '../scripts/api.js';
 
-
+// Активация валидации
+enableValidation(validationConfig);
 
 
 // Анимирование модальных окон
@@ -46,7 +48,6 @@ const closeBtnpArr = Array.from(allCloseBtn);
 closeBtnpArr.map(item => {
     item.addEventListener('click', evt => closePopup(evt.target.closest('.popup')));
 });
- 
 
 // Темплейт карточки
  export const cardTemplate = document.querySelector('#card-template').content;
@@ -54,26 +55,6 @@ closeBtnpArr.map(item => {
 // DOM узлы
 const content = document.querySelector('.content');
 const placeList = content.querySelector('.places__list');
-
-
-// rendCards();
-
-
-
-
-// Вывести дефолтные карточки на страницу
-// initialCards.forEach(
-    // card => placeList.append(
-    //     createCard(
-    //         card.name,
-    //         card.link,
-    //         deleteCard,
-    //         addCardLike,
-    //         fullViewCard
-    //     )
-//     )
-// );
-
 
 
 // Обработчик, открывающий модальное окно при клике по изображению карточки
@@ -85,6 +66,7 @@ function fullViewCard(name, link) {
     descriptionImage.textContent = name;
     openPopup(popupImage);
 };
+
 
 
 //БЛОК ОТВЕЧАЕТ ЗА ОБНОВЛЕНИЕ АВАТАРКИ
@@ -112,18 +94,20 @@ const heandlerAddNewAvatarImage = evt => {
     })
     .catch((err) => {
         console.log(err);
-    });
-  avatarForm.reset();
-  closePopup(popupAvatarImage);
+    })
+    .finally(()=> {
+      avatarForm.reset();
+      closePopup(popupAvatarImage);  
+    });  
 }
 
 
 
-//Блок отвечает за вывод модального окна, редактирующего профиль, отображение измененных данных на странице
+//БЛОК ОТВЕЧАЕТ ЗА ОБНОВЛЕНИЕ ИНФОРМАЦИИ О ПОЛЬЗОВАТЕЛЕ
+// Обработчик, открывающий модальное окно при клике по кнопке редактирования
 export const nameInput = document.querySelector('.profile__title');
 export const jobInput = document.querySelector('.profile__description');
 export const formEditProfile = document.forms.edit_profile;
-
 const popupProfile = document.querySelector('.popup_type_edit');
 const profileButton = document.querySelector('.profile__edit-button');
 profileButton.addEventListener('click', () => {
@@ -134,13 +118,12 @@ profileButton.addEventListener('click', () => {
     clearValidation(popupProfile, validationConfig);
     openPopup(popupProfile);
 });
-
+// Обработчик формы изменения данных о пользователе
 formEditProfile.addEventListener('submit', evt => handleProfileSubmit(evt));
 const handleProfileSubmit = evt => {
     evt.preventDefault();
     const nameFieldInPopup = formEditProfile.elements.name;
     const jobFieldInPopup = formEditProfile.elements.description;
-
     const btn = evt.target.querySelector(".button");
     renderLoader(true, btn);
     sendInfoAboutMeToServer(nameFieldInPopup, jobFieldInPopup)
@@ -151,80 +134,61 @@ const handleProfileSubmit = evt => {
     })
     .catch((err) => {
         console.log(err);
+    })
+    .finally(()=> {
+      formEditProfile.reset();
+      closePopup(popupProfile);
     });  
-
-    formEditProfile.reset();
-    closePopup(popupProfile);
 };
 
 
 
-
-
-
-
-
-
-
-
-
-
-//Блок отвечает за вывод модального окна, дабавляющего кастомную карточку 
-const newCardBtn = document.querySelector('.profile__add-button');
+//БЛОК ОТВЕЧАЕТ ЗА ДОБАВЛЕНИЕ КАСТОМНОЙ КАРТОЧКИ
+// Обработчик, открывающий модальное окно при клике по кнопке добавления карточки
 const popupCreateCard = document.querySelector('.popup_type_new-card');
 const formAddcard = document.forms.new_place;
-
-
-
-
+const newCardBtn = document.querySelector('.profile__add-button');
 newCardBtn.addEventListener('click', () => {
     formAddcard.place_name.value="";
     formAddcard.link.value="";
-    openPopup(popupCreateCard)
     clearValidation(popupCreateCard, validationConfig);
+    openPopup(popupCreateCard)
     }
 );
-    
-
-
-
-
+// Обработчик формы добавления кастомной карточки
+formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
 const handleAddUserCard = (evt) => {
     evt.preventDefault();
+    const btn = evt.target.querySelector(".button");
+    renderLoader(true, btn)
     sendCardToServer(formAddcard.elements.place_name.value, formAddcard.elements.link.value)
       .then((card) => {
-         placeList.prepend(createCard(
+        placeList.prepend(createCard(
           card,
-          "f0173b2fceb8a6f592738266",
+          myID,
           sendCardLikeToServer,
           deleteCardLikeFromServer,
           fullViewCard
-        )) 
+        ))
+        renderLoader(false, btn)
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(()=> {
+        formAddcard.reset();    
+        closePopup(popupCreateCard);    
       });  
-    formAddcard.reset();    
-    closePopup(popupCreateCard);    
 };
 
-formAddcard.addEventListener('submit', evt => handleAddUserCard(evt));
 
 
-
-
-
-enableValidation(validationConfig);
- 
-
-
-
+// БЛОК ОТВЕЧАЕТ ЗА УДАЛЕНИЕ КАРТОЧКИ
 export const popupDeleteCard = document.querySelector('.popup_delete_card');
-
 const formDeleteCard = document.forms.delete_card;
+// Обработчик формы удаления кастомной карточки после подтверждения действия (кнопка Да)
 formDeleteCard.addEventListener('submit', evt => handlerDeleteCard(evt));
 const handlerDeleteCard = (evt) => {
-     
   evt.preventDefault();
   deleteCardFromServer(cardIDForDelete)
     .then(() => {
@@ -233,43 +197,22 @@ const handlerDeleteCard = (evt) => {
     .catch((err) => {
       console.log(err);
     }); 
-  
   closePopup(popupDeleteCard)
-}
-
-
-
-
-
-const getAvatarImageLinkFromServer = () => {
-  getInfoAboutMeFromServer()
-    .then(me => profileImage.style.backgroundImage= `url(${me.avatar})`)
-    .catch((err) => {
-        console.log(err);
-    });  
 }
 
 
 
 // Отрисовка элементов страницы, полученных с сервера
 const rendSiteFromServer = () => {
-  // Отображение информации профиля
-  getInfoAboutMeFromServer(nameInput, jobInput)
-    .then((me) => {
-      nameInput.textContent = me.name;
-      jobInput.textContent = me.about; 
-    })
-    .catch((err) => {
-      console.log(err);
-    }); 
-
-  getAvatarImageLinkFromServer();
-
-
   Promise.all([getInitialCards(), getInfoAboutMeFromServer()])
   .then(
-    ([cards, me]) => cards.forEach(
-      card => placeList.append(
+    ([cards, me]) => 
+    {
+      nameInput.textContent = me.name;
+      jobInput.textContent = me.about; 
+      profileImage.style.backgroundImage= `url(${me.avatar})`
+
+      cards.forEach(card => placeList.append(
         createCard(
           card,
           me._id,
@@ -277,8 +220,8 @@ const rendSiteFromServer = () => {
           deleteCardLikeFromServer,
           fullViewCard
         ) 
-      )
-    )
+      ))
+    }
   )
   .catch((err) => {console.log('Ошибка. Запрос не выполнен: ', err)});
 }

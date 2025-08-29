@@ -6,6 +6,9 @@ const config = {
   }
 }
 
+export const myID = "f0173b2fceb8a6f592738266";
+
+// Запрос на получение имеющихся карточек на сервере
 export const getInitialCards = () => {
     return fetch(`${config.baseUrl}/cards`, {
         method: "GET",
@@ -19,49 +22,8 @@ export const getInitialCards = () => {
     })
 } 
 
-export const deleteCardFromServer = (cardID) => {
-  return fetch(`${config.baseUrl}/cards/${cardID}`, {
-    method: 'DELETE',
-    headers: config.headers
-  })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-  }); 
-}
-
- export const sendCardLikeToServer = (cardID) => {
-    return fetch(`${config.baseUrl}/cards/likes/${cardID}`, { 
-      method: 'PUT',
-      headers: config.headers
-    })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }); 
-}
-
-export const deleteCardLikeFromServer = cardID => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardID}`, { 
-      method: 'DELETE',
-      headers: config.headers
-  })
-    .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-      }); 
-}
-
-
-
+// Запрос на добавление карточки на сервер
 export const sendCardToServer = (name, link) => {
-
   return fetch(`${config.baseUrl}/cards`, {
   method: 'POST',
   headers: config.headers,
@@ -78,7 +40,49 @@ export const sendCardToServer = (name, link) => {
       }); 
 }
 
+// Запрос на удаление карточки с сервера
+export const deleteCardFromServer = (cardID) => {
+  return fetch(`${config.baseUrl}/cards/${cardID}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+  }); 
+}
 
+// Запрос добавление лайка карточки на сервере
+ export const sendCardLikeToServer = (cardID) => {
+    return fetch(`${config.baseUrl}/cards/likes/${cardID}`, { 
+      method: 'PUT',
+      headers: config.headers
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }); 
+}
+
+// Запрос удаления лайка карточки на сервере
+export const deleteCardLikeFromServer = cardID => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardID}`, { 
+      method: 'DELETE',
+      headers: config.headers
+  })
+    .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }); 
+}
+
+// Запрос на отрправку информации о пользователе на сервер
 export const sendInfoAboutMeToServer = (nameFieldInPopup, jobFieldInPopup) => {
   return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
@@ -96,6 +100,7 @@ export const sendInfoAboutMeToServer = (nameFieldInPopup, jobFieldInPopup) => {
       }); 
 }
 
+// Запрос на получение информации о пользователе с сервера
 export const getInfoAboutMeFromServer = () => {
   return fetch(`${config.baseUrl}/users/me`, {
         method: "GET",
@@ -108,7 +113,8 @@ export const getInfoAboutMeFromServer = () => {
       return Promise.reject(`Ошибка: ${res.status}`);
     }); 
 }
-   
+
+// Запрос на обновление изображение аватара на сервере
 export const sendAvatarImageLinkToServer = link => {
   return fetch(`${config.baseUrl}/users/me/avatar`, {
        method: 'PATCH',
@@ -125,18 +131,3 @@ export const sendAvatarImageLinkToServer = link => {
     }); 
 }
 
-
-
-  // .then((res) => {
-  //     return res.json();
-  //   }
-  // )
-  // .then((data) => {
-  //     nameInput.textContent = data.name;
-  //     jobInput.textContent = data.about; 
-  //   }
-  // )
-  // .catch((err) => {
-  //     console.log('Ошибка. Запрос не выполнен: ', err);
-  //   }
-  // )

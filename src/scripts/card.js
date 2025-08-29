@@ -1,8 +1,13 @@
 
 import {cardTemplate, popupDeleteCard} from  '../scripts/index.js';
 import {openPopup} from './modal.js';
+import {
+  myID
+} from '../scripts/api.js';
 
-
+// Глобальные переменные, которые используются в форме удаления карточки
+export let cardIDForDelete = "";
+export let cardElementForDelete = "";
 
 // Функция создания карточки
 export function createCard(card, id, addCardLikeHandler, deleteCardLikeHandler, fullViewCardHandler) {
@@ -16,15 +21,14 @@ export function createCard(card, id, addCardLikeHandler, deleteCardLikeHandler, 
     cardLikesCount.textContent = card.likes.length;
     cardElement.querySelector('.card__title').textContent = card.name;
 
-    //отображаем поставленный мной лайк карточки, выгруженной с сервера
+    // Отрисовка поставленного пользователем лайка карточки, выгруженной с сервера
     card.likes.forEach(like => {
-        if (like._id == "f0173b2fceb8a6f592738266") {
+        if (like._id == myID) {
             rendLikeHeart(cardLikeBtn);
         }
     });
 
-
-    //вешаем слушателя на кнопку лайка. Если нажать на кнопку, то
+    // Вешаем слушателя на кнопку лайка. Если нажать на кнопку, то
     cardLikeBtn.addEventListener('click', () => {
         //если лайк есть - отправляем запрос удаления лайка в сервере, при успехе - лайк с карточки убирается
         if(cardLikeBtn.classList.contains('card__like-button_is-active')) {
@@ -50,7 +54,7 @@ export function createCard(card, id, addCardLikeHandler, deleteCardLikeHandler, 
 
     });
 
-
+    
     cardImage.addEventListener('click', () => fullViewCardHandler(card.name, card.link));
     
     renderDeleteCardBtn(cardDeleteBtn, cardElement, card._id, card.owner._id, id);
@@ -58,23 +62,7 @@ export function createCard(card, id, addCardLikeHandler, deleteCardLikeHandler, 
     return cardElement;
 }
 
-//       /// проверка на авторство карточки
-//   if (card.owner._id !== profileId) {
-//     deleteButton.classList.add("element__delete-unactive");
-//   } else {
-//     /// Удаление карточки
-//     deleteButton.addEventListener("click", function () {
-//       currentCardId = cardId;
-//       currentDeleteButton = deleteButton;
-//       openDeletePopup();
-//     });
-//   }
-
-
-export let cardIDForDelete = "";
-export let cardElementForDelete = "";
-
-
+// Отрисовка кнопки удаления карточки
 const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
     if (cardOwnerID != myID) {
         btn.disabled = true;
@@ -82,7 +70,6 @@ const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
     } 
     else {
         btn.addEventListener('click', () => {
-           
             cardIDForDelete = cardID;
             cardElementForDelete = cardInPage;
             openPopup(popupDeleteCard);
@@ -92,30 +79,9 @@ const renderDeleteCardBtn = (btn, cardInPage, cardID, cardOwnerID, myID) => {
 }
 
 
-
-// avatarForm.addEventListener('submit', evt => heandlerAddNewAvatarImage(evt));
-// const heandlerAddNewAvatarImage = evt => {
-//   evt.preventDefault();
-//   const avatarLink = avatarForm.elements.link;
-//   sendAvatarImageLinkToServer(avatarLink.value)
-//   getAvatarImageLinkFromServer();
-
-//   avatarForm.reset();
-//   closePopup(popupAvatarImage);
-// }
-
-
-
-
 //Функция отрисовки лайка
 const rendLikeHeart = heart => {
     heart.classList.toggle('card__like-button_is-active');
 }
-
-// Функция удаления карточки
-export function deleteCard(card) {
-    card.remove();
-};
-
 
 
